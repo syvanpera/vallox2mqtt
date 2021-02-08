@@ -2,6 +2,7 @@ package vallox
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	backoff "github.com/cenkalti/backoff/v4"
@@ -72,6 +73,9 @@ func (c *client) IsConnected() bool {
 }
 
 func (c *client) Disconnect() {
+	if !c.connected {
+		return
+	}
 	c.connected = false
 	if err := c.port.Close(); err != nil {
 		log.Error().Err(err).Msg("Failed to close the serial connection")
@@ -85,12 +89,12 @@ func (c *client) backOffStrategy() backoff.BackOff {
 		b.Reset()
 
 		return b
-	} else {
-		b := backoff.StopBackOff{}
-		b.Reset()
-
-		return &b
 	}
+
+	b := backoff.StopBackOff{}
+	b.Reset()
+
+	return &b
 }
 
 func (c *client) openSerialConnection() error {
@@ -109,6 +113,14 @@ func (c *client) startListener() error {
 		if err != nil {
 			log.Fatal().Err(err).Msg("Error while reading from serial connection")
 		}
+
+		fmt.Printf("Message received, length: %d", n)
+
+		for i := 0; i < len(buff); i++ {
+			fmt.Printf("0x%x ", buff[i])
+		}
+		fmt.Println()
+
 		switch {
 		case n == 0:
 			return ErrConnectionLost
