@@ -1,0 +1,11 @@
+ha:
+  discovery_prefix: homeassistant
+  device_id: vallox_digit_se
+
+mqtt:
+  broker: localhost:1883
+  username: user
+  password: pass
+
+vallox:
+  port: /dev/ttyUSB0

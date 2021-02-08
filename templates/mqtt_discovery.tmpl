@@ -1,0 +1,18 @@
+{
+  "availability_topic": "vallox2mqtt/bridge/state",
+  "device": {
+    "identifiers": [
+      "vallox2mqtt_{{.DeviceId}}"
+    ],
+    "manufacturer": "Vallox",
+    "model": "Digit SE ventilation unit",
+    "name": "{{.DeviceName}}",
+    "sw_version": "Vallox2MQTT {{.Version}}"
+  },
+  "icon": "mdi:{{.SensorIcon}}",
+  "json_attributes_topic": "vallox2mqtt/{{.DeviceId}}",
+  "name": "{{.SensorName}}",
+  "state_topic": "vallox2mqtt/{{.DeviceId}}",
+  "unique_id": "{{.DeviceId}}_{{.SensorId}}_vallox2mqtt",
+  "value_template": "{{`{{`}} value_json.{{.SensorId}} {{`}}`}}"
+}
