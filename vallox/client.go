@@ -1,8 +1,9 @@
 package vallox
 
 import (
+	"encoding/hex"
 	"errors"
-	"fmt"
+	"strings"
 	"time"
 
 	backoff "github.com/cenkalti/backoff/v4"
@@ -107,27 +108,18 @@ func (c *client) openSerialConnection() error {
 func (c *client) startListener() error {
 	log.Info().Msg("Starting Vallox message listener")
 
-	buff := make([]byte, valloxMessageLength)
+	buff := make([]byte, vxMsgLength)
 	for {
-		n, err := c.port.Read(buff)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Error while reading from serial connection")
+		total := 0
+		for total < vxMsgLength {
+			n, err := c.port.Read(buff[total:])
+			if err != nil {
+				log.Fatal().Err(err).Msg("Error while reading from serial connection")
+			}
+			total += n
 		}
 
-		fmt.Printf("Message received, length: %d", n)
-
-		for i := 0; i < len(buff); i++ {
-			fmt.Printf("0x%x ", buff[i])
-		}
-		fmt.Println()
-
-		switch {
-		case n == 0:
-			return ErrConnectionLost
-		case n < valloxMessageLength:
-			log.Warn().Msg("Incomplete or invalid message received")
-			continue
-		}
+		log.Debug().Str("MSG", strings.TrimSuffix(hex.Dump(buff), "\n")).Msg("Message received")
 
 		domain := buff[0]
 		sender := buff[1]
@@ -137,14 +129,14 @@ func (c *client) startListener() error {
 		checksum := buff[5]
 		computedChecksum := (domain + sender + receiver + command + arg) & 0x00ff
 
-		if domain != valloxDomain {
+		if domain != vxDomain {
 			log.Warn().Int("DOMAIN", int(buff[0])).Msg("Unknown message")
 			continue
 		}
 
 		if checksum == computedChecksum {
 			c.parseMessage(sender, receiver, command, arg)
-			c.options.DefaultMessageHandler(NewMessage(buff[1:n]))
+			c.options.DefaultMessageHandler(NewMessage(buff[1:vxMsgLength]))
 		}
 	}
 }

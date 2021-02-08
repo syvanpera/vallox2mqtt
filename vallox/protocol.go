@@ -1,8 +1,8 @@
 package vallox
 
 const (
-	valloxMessageLength = 6 // Always 6
-	valloxDomain        = 1 // Always 1
+	vxMsgLength = 6 // Always 6
+	vxDomain    = 1 // Always 1
 )
 
 // Addresses for sender and receiver
