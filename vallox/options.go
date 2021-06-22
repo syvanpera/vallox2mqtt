@@ -12,8 +12,8 @@ func NewClientOptions() *ClientOptions {
 	o := &ClientOptions{
 		SerialPort:        "/dev/ttyUSB0",
 		BaudRate:          9600,
-		WaitForConnection: true,
-		AutoReconnect:     true,
+		WaitForConnection: false,
+		AutoReconnect:     false,
 	}
 	return o
 }

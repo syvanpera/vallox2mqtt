@@ -9,10 +9,10 @@
     "name": "{{.DeviceName}}",
     "sw_version": "Vallox2MQTT {{.Version}}"
   },
-  "icon": "mdi:{{.SensorIcon}}",
+  "icon": "mdi:{{.EntityIcon}}",
   "json_attributes_topic": "vallox2mqtt/{{.DeviceId}}",
-  "name": "{{.SensorName}}",
+  "name": "{{.EntityName}}",
   "state_topic": "vallox2mqtt/{{.DeviceId}}",
-  "unique_id": "{{.DeviceId}}_{{.SensorId}}_vallox2mqtt",
-  "value_template": "{{`{{`}} value_json.{{.SensorId}} {{`}}`}}"
+  "unique_id": "{{.DeviceId}}_{{.EntityId}}_vallox2mqtt",
+  "value_template": "{{`{{`}} value_json.{{.EntityId}} {{`}}`}}"
 }

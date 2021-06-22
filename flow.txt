@@ -1,0 +1,9 @@
+Flow
+- Connect to MQTT
+- Connect to Serial Device
+- Request current status/state from Vallox
+  * some values (for example temperature) don't need to be requested, they are sent periodically
+- Start listening to Vallox messages
+  * parse message
+  * update state
+  * send updated state to MQTT (if any values have actually changed)

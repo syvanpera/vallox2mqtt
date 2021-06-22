@@ -52,9 +52,6 @@ func runValloxTest(_ *cobra.Command, _ []string) {
 func runValloxDump(_ *cobra.Command, _ []string) {
 	opts := vallox.NewClientOptions().
 		SetSerialPort(viper.GetString("vallox.port")).
-		SetBaudRate(viper.GetInt("vallox.baudRate")).
-		SetWaitForConnection(false).
-		SetAutoReconnect(false).
 		SetDefaultMessageHandler(func(msg vallox.Message) {
 			fmt.Printf("Got message %v\n", msg)
 			// for i := 0; i < len(msg.Msg); i++ {
@@ -63,8 +60,12 @@ func runValloxDump(_ *cobra.Command, _ []string) {
 			// fmt.Println()
 		})
 	client := vallox.NewClient(opts)
-	client.Connect()
+	if err := client.Connect(); err != nil {
+		log.Fatal().Err(err).Msg("Serial connection failed")
+	}
 	defer client.Disconnect()
+
+	client.StartListener()
 }
 
 func init() {

@@ -3,6 +3,7 @@ package vallox
 import (
 	"encoding/hex"
 	"errors"
+	"io"
 	"strings"
 	"time"
 
@@ -15,6 +16,7 @@ type Client interface {
 	Connect() error
 	IsConnected() bool
 	Disconnect()
+	StartListener()
 }
 
 type client struct {
@@ -51,12 +53,15 @@ func (c *client) Connect() error {
 	}
 
 	if err := backoff.Retry(c.openSerialConnection, c.backOff); err != nil {
-		log.Error().Err(err).Msg("Serial connection failed")
 		return err
 	}
 
 	c.connected = true
 
+	return nil
+}
+
+func (c *client) StartListener() {
 	if err := c.startListener(); err != nil {
 		log.Error().Err(err).Msg("Serial connection lost")
 		c.Disconnect()
@@ -65,8 +70,6 @@ func (c *client) Connect() error {
 			c.Connect()
 		}
 	}
-
-	return nil
 }
 
 func (c *client) IsConnected() bool {
@@ -110,14 +113,17 @@ func (c *client) startListener() error {
 
 	buff := make([]byte, vxMsgLength)
 	for {
-		total := 0
-		for total < vxMsgLength {
-			n, err := c.port.Read(buff[total:])
-			if err != nil {
-				log.Fatal().Err(err).Msg("Error while reading from serial connection")
-			}
-			total += n
+		if _, err := io.ReadAtLeast(c.port, buff, vxMsgLength); err != nil {
+			log.Fatal().Err(err).Msg("Error while reading from serial connection")
 		}
+		// total := 0
+		// for total < vxMsgLength {
+		// 	n, err := c.port.Read(buff[total:])
+		// 	if err != nil {
+		// 		log.Fatal().Err(err).Msg("Error while reading from serial connection")
+		// 	}
+		// 	total += n
+		// }
 
 		log.Debug().Str("MSG", strings.TrimSuffix(hex.Dump(buff), "\n")).Msg("Message received")
 

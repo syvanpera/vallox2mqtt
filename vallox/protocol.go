@@ -43,8 +43,8 @@ const (
 	VariableTempSupply  = 0x35
 )
 
-var FanSpeedMapping = [...]int{0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF}
-var TemperatureMapping = [...]int{
+var FanSpeedMap = [...]int{0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF}
+var TemperatureMap = [...]int{
 	-74, -70, -66, -62, -59, -56, -54, -52,
 	-50, -48, -47, -46, -44, -43, -42, -41,
 	-40, -39, -38, -37, -36, -35, -34, -33,
@@ -82,8 +82,8 @@ var TemperatureMapping = [...]int{
 func convertFanSpeed(value byte) int {
 	fanSpeed := 0
 
-	for i := 0; i < len(FanSpeedMapping); i++ {
-		if FanSpeedMapping[i] == int(value) {
+	for i := 0; i < len(FanSpeedMap); i++ {
+		if FanSpeedMap[i] == int(value) {
 			fanSpeed = i + 1
 			break
 		}
@@ -93,5 +93,5 @@ func convertFanSpeed(value byte) int {
 }
 
 func convertTemperature(value byte) int {
-	return TemperatureMapping[value]
+	return TemperatureMap[value]
 }

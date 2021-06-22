@@ -1,1 +1,13 @@
 * Vallox2MQTT
+** Commands
+*** `vallox test`
+Test connection to Vallox via serial connection
+*** `vallox dump`
+Start listening to the messages coming in from the RS485 bus and dump them into
+the log
+*** `vallox state`
+Requests current state of all sensors from Vallox and sends it to MQTT
+*** `mqtt test`
+Test connection to MQTT broker
+*** `ha discover`
+Send MQTT discovery to create the necessary devices/sensors to HA

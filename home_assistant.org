@@ -1,0 +1,63 @@
+* HA MQTT messages
+** MQTT discovery
+*** Add sensors
+**** Fan speed
+***** topic: homeassistant/sensor/0xdeadbeef/fan_speed/config
+#+begin_src json
+{
+  "availability_topic": "vallox2mqtt/bridge/state",
+  "device": {
+    "identifiers": [
+      "vallox2mqtt_0xdeadbeef"
+    ],
+    "manufacturer": "Vallox",
+    "model": "Digit SE ventilation unit",
+    "name": "0xdeadbeef",
+    "sw_version": "Vallox2MQTT 1.0.0"
+  },
+  "icon": "mdi:fan",
+  "json_attributes_topic": "vallox2mqtt/0xdeadbeef",
+  "name": "0xdeadbeef fan_speed",
+  "state_topic": "vallox2mqtt/0xdeadbeef",
+  "unique_id": "0xdeadbeef_fan_speed_vallox2mqtt",
+  "value_template": "{{ value_json.fan_speed }}"
+}
+#+end_src
+**** Outside temperature
+***** topic: homeassistant/sensor/0xdeadbeef/outside_temp/config
+#+begin_src json
+{
+  "availability": "vallox2mqtt/bridge/state",
+  "device": {
+    "identifiers": [
+      "vallox2mqtt_0xdeadbeef"
+    ],
+    "manufacturer": "Vallox",
+    "model": "Digit SE ventilation unit",
+    "name": "0xdeadbeef",
+    "sw_version": "Vallox2MQTT 1.0.0"
+  },
+  "icon": "mdi:thermometer",
+  "json_attributes_topic": "vallox2mqtt/0xdeadbeef",
+  "name": "0xdeadbeef outside_temp",
+  "state_topic": "vallox2mqtt/0xdeadbeef",
+  "unique_id": "0xdeadbeef_outside_temp_vallox2mqtt",
+  "value_template": "{{ value_json.outside_temp }}"
+}
+#+end_src
+
+*** Remove sensors
+Same topic, empty payload
+
+** MQTT availability
+*** vallox2mqtt/bridge/state
+online/offline
+** MQTT values
+*** vallox2mqtt/0xdeadbeef
+Need to send the whole state at once, otherwise missing values are set to empty
+#+begin_src json
+{
+  "fan_speed": 3,
+  "outside_temp": -10
+}
+#+end_src

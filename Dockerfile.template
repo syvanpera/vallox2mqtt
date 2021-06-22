@@ -1,0 +1,16 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-golang:latest-build AS builder
+
+WORKDIR /app
+
+COPY . /app/
+
+RUN go build
+
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian:stretch
+
+ENV UDEV=1
+
+COPY --from=builder /app/vallox2mqtt .
+COPY --from=builder /app/config.yml .
+
+CMD ./vallox2mqtt -d vallox dump
