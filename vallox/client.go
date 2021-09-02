@@ -143,6 +143,8 @@ func (c *client) startListener() error {
 		if checksum == computedChecksum {
 			c.parseMessage(sender, receiver, command, arg)
 			c.options.DefaultMessageHandler(NewMessage(buff[1:vxMsgLength]))
+		} else {
+			log.Warn().Msg("Message checksum mismatch")
 		}
 	}
 }
