@@ -1,18 +1,19 @@
 {
-  "availability_topic": "vallox2mqtt/bridge/state",
   "device": {
     "identifiers": [
       "vallox2mqtt_{{.DeviceId}}"
     ],
     "manufacturer": "Vallox",
-    "model": "Digit SE ventilation unit",
+    "model": "Digit SE Ventilation Unit",
     "name": "{{.DeviceName}}",
     "sw_version": "Vallox2MQTT {{.Version}}"
   },
-  "icon": "mdi:{{.EntityIcon}}",
-  "json_attributes_topic": "vallox2mqtt/{{.DeviceId}}",
+{{if ne .DeviceClass ""}}
+  "device_class": "{{.DeviceClass}}",
+{{end}}
   "name": "{{.EntityName}}",
-  "state_topic": "vallox2mqtt/{{.DeviceId}}",
-  "unique_id": "{{.DeviceId}}_{{.EntityId}}_vallox2mqtt",
-  "value_template": "{{`{{`}} value_json.{{.EntityId}} {{`}}`}}"
+  "state_topic": "vallox2mqtt/{{.DeviceId}}/state",
+  "unique_id": "vallox2mqtt_{{.DeviceId}}_{{.EntityId}}",
+  "value_template": "{{`{{`}} value_json.{{.EntityId}} {{`}}`}}",
+  "unit_of_measurement": "{{.UnitOfMeasurement}}"
 }
