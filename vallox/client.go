@@ -25,6 +25,7 @@ type client struct {
 	serialMode serial.Mode
 	connected  bool
 	backOff    backoff.BackOff
+	state      State
 }
 
 var ErrConnectionFailed = errors.New("Could not open serial connection")
@@ -157,6 +158,10 @@ func (c *client) parseMessage(sender byte, receiver byte, command byte, arg byte
 		case VariableFanSpeed:
 			fanSpeed := convertFanSpeed(arg)
 			log.Debug().Int("FANSPEED", fanSpeed).Msg("Got fan speed")
+			if c.state.FanSpeed != fanSpeed {
+				c.state.FanSpeed = fanSpeed
+				log.Debug().Interface("STATE", c.state).Msg("Fan speed changed")
+			}
 		case VariableTempOutside:
 			temp := convertTemperature(arg)
 			log.Debug().Int("TEMPERATURE", temp).Msg("Got outside air temperature")

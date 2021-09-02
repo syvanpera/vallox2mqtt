@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -53,7 +51,7 @@ func runValloxDump(_ *cobra.Command, _ []string) {
 	opts := vallox.NewClientOptions().
 		SetSerialPort(viper.GetString("vallox.port")).
 		SetDefaultMessageHandler(func(msg vallox.Message) {
-			fmt.Printf("Got message %v\n", msg)
+			// fmt.Printf("Got message %v\n", msg)
 			// for i := 0; i < len(msg.Msg); i++ {
 			// 	fmt.Printf("0x%x ", msg.Msg[i])
 			// }
