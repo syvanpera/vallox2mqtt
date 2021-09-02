@@ -147,6 +147,9 @@ func (c *client) startListener() error {
 		} else {
 			log.Warn().Msg("Message checksum mismatch")
 		}
+		for i := range buff {
+			buff[i] = 0
+		}
 	}
 }
 
