@@ -160,20 +160,32 @@ func (c *client) parseMessage(sender byte, receiver byte, command byte, arg byte
 			log.Debug().Int("FANSPEED", fanSpeed).Msg("Got fan speed")
 			if c.state.FanSpeed != fanSpeed {
 				c.state.FanSpeed = fanSpeed
-				log.Debug().Interface("STATE", c.state).Msg("Fan speed changed")
+				log.Info().Interface("STATE", c.state).Msg("Fan speed changed")
 			}
 		case VariableTempOutside:
 			temp := convertTemperature(arg)
 			log.Debug().Int("TEMPERATURE", temp).Msg("Got outside air temperature")
+			if c.state.OutsideTemp != temp {
+				c.state.OutsideTemp = temp
+				log.Info().Interface("STATE", c.state).Msg("Outside air temperature changed")
+			}
 		case VariableTempExhaust:
 			temp := convertTemperature(arg)
 			log.Debug().Int("TEMPERATURE", temp).Msg("Got exhaust air temperature")
+			if c.state.ExhaustTemp != temp {
+				c.state.ExhaustTemp = temp
+				log.Info().Interface("STATE", c.state).Msg("Exhaust air temperature changed")
+			}
 		case VariableTempInside:
 			temp := convertTemperature(arg)
 			log.Debug().Int("TEMPERATURE", temp).Msg("Got inside air temperature")
-		case VariableTempSupply:
-			temp := convertTemperature(arg)
-			log.Debug().Int("TEMPERATURE", temp).Msg("Got supply air temperature")
+			if c.state.InsideTemp != temp {
+				c.state.InsideTemp = temp
+				log.Info().Interface("STATE", c.state).Msg("Inside air temperature changed")
+			}
+			// case VariableTempSupply:
+			// 	temp := convertTemperature(arg)
+			// 	// log.Debug().Int("TEMPERATURE", temp).Msg("Got supply air temperature")
 		}
 	}
 }
