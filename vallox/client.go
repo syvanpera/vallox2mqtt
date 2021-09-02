@@ -137,7 +137,7 @@ func (c *client) startListener() error {
 		computedChecksum := (domain + sender + receiver + command + arg) & 0x00ff
 
 		if domain != vxDomain {
-			log.Warn().Int("DOMAIN", int(buff[0])).Msg("Unknown message")
+			log.Warn().Int("DOMAIN", int(buff[0])).Str("MSG", strings.TrimSuffix(hex.Dump(buff), "\n")).Msg("Unknown message")
 			continue
 		}
 
@@ -157,28 +157,28 @@ func (c *client) parseMessage(sender byte, receiver byte, command byte, arg byte
 		switch int(command) {
 		case VariableFanSpeed:
 			fanSpeed := convertFanSpeed(arg)
-			log.Debug().Int("FANSPEED", fanSpeed).Msg("Got fan speed")
+			// log.Debug().Int("FANSPEED", fanSpeed).Msg("Got fan speed")
 			if c.state.FanSpeed != fanSpeed {
 				c.state.FanSpeed = fanSpeed
 				log.Info().Interface("STATE", c.state).Msg("Fan speed changed")
 			}
 		case VariableTempOutside:
 			temp := convertTemperature(arg)
-			log.Debug().Int("TEMPERATURE", temp).Msg("Got outside air temperature")
+			// log.Debug().Int("TEMPERATURE", temp).Msg("Got outside air temperature")
 			if c.state.OutsideTemp != temp {
 				c.state.OutsideTemp = temp
 				log.Info().Interface("STATE", c.state).Msg("Outside air temperature changed")
 			}
 		case VariableTempExhaust:
 			temp := convertTemperature(arg)
-			log.Debug().Int("TEMPERATURE", temp).Msg("Got exhaust air temperature")
+			// log.Debug().Int("TEMPERATURE", temp).Msg("Got exhaust air temperature")
 			if c.state.ExhaustTemp != temp {
 				c.state.ExhaustTemp = temp
 				log.Info().Interface("STATE", c.state).Msg("Exhaust air temperature changed")
 			}
 		case VariableTempInside:
 			temp := convertTemperature(arg)
-			log.Debug().Int("TEMPERATURE", temp).Msg("Got inside air temperature")
+			// log.Debug().Int("TEMPERATURE", temp).Msg("Got inside air temperature")
 			if c.state.InsideTemp != temp {
 				c.state.InsideTemp = temp
 				log.Info().Interface("STATE", c.state).Msg("Inside air temperature changed")
