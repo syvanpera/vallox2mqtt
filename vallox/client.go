@@ -3,7 +3,6 @@ package vallox
 import (
 	"encoding/hex"
 	"errors"
-	"io"
 	"strings"
 	"time"
 
@@ -109,47 +108,77 @@ func (c *client) openSerialConnection() error {
 	return err
 }
 
+func (c *client) readMessage() ([]byte, error) {
+	msg := make([]byte, vxMsgLength)
+	b := make([]byte, 1)
+
+	_, err := c.port.Read(b)
+	if err != nil {
+		return nil, err
+	}
+
+	if b[0] == vxDomain {
+		msg[0] = b[0]
+
+		for i := 1; i < vxMsgLength; i++ {
+			_, err := c.port.Read(b)
+			if err != nil {
+				return nil, err
+			}
+			msg[i] = b[0]
+		}
+
+		return msg, nil
+	}
+
+	return nil, errors.New("No message received")
+
+	// // total := 0
+	// // for total < vxMsgLength {
+	// // 	n, err := c.port.Read(buff[total:])
+	// // 	if err != nil {
+	// // 		log.Fatal().Err(err).Msg("Error while reading from serial connection")
+	// // 	}
+	// // 	total += n
+	// // }
+
+	// log.Debug().Str("MSG", strings.TrimSuffix(hex.Dump(buff), "\n")).Msg("Message received")
+
+	// domain := buff[0]
+	// sender := buff[1]
+	// receiver := buff[2]
+	// command := buff[3]
+	// arg := buff[4]
+	// checksum := buff[5]
+	// computedChecksum := (domain + sender + receiver + command + arg) & 0x00ff
+
+	// if domain != vxDomain {
+	// 	log.Warn().Int("DOMAIN", int(buff[0])).Str("MSG", strings.TrimSuffix(hex.Dump(buff), "\n")).Msg("Unknown message")
+	// 	continue
+	// }
+
+	// if checksum == computedChecksum {
+	// 	c.parseMessage(sender, receiver, command, arg)
+	// 	c.options.DefaultMessageHandler(NewMessage(buff[1:vxMsgLength]))
+	// } else {
+	// 	log.Warn().Msg("Message checksum mismatch")
+	// }
+	// for i := range buff {
+	// 	buff[i] = 0
+	// }
+}
+
 func (c *client) startListener() error {
 	log.Info().Msg("Starting Vallox message listener")
 
-	buff := make([]byte, vxMsgLength)
 	for {
-		if _, err := io.ReadAtLeast(c.port, buff, vxMsgLength); err != nil {
-			log.Fatal().Err(err).Msg("Error while reading from serial connection")
-		}
-		// total := 0
-		// for total < vxMsgLength {
-		// 	n, err := c.port.Read(buff[total:])
-		// 	if err != nil {
-		// 		log.Fatal().Err(err).Msg("Error while reading from serial connection")
-		// 	}
-		// 	total += n
-		// }
-
-		log.Debug().Str("MSG", strings.TrimSuffix(hex.Dump(buff), "\n")).Msg("Message received")
-
-		domain := buff[0]
-		sender := buff[1]
-		receiver := buff[2]
-		command := buff[3]
-		arg := buff[4]
-		checksum := buff[5]
-		computedChecksum := (domain + sender + receiver + command + arg) & 0x00ff
-
-		if domain != vxDomain {
-			log.Warn().Int("DOMAIN", int(buff[0])).Str("MSG", strings.TrimSuffix(hex.Dump(buff), "\n")).Msg("Unknown message")
+		msg, err := c.readMessage()
+		if err != nil {
+			log.Warn().Err(err).Msg("Error while reading message")
 			continue
 		}
 
-		if checksum == computedChecksum {
-			c.parseMessage(sender, receiver, command, arg)
-			c.options.DefaultMessageHandler(NewMessage(buff[1:vxMsgLength]))
-		} else {
-			log.Warn().Msg("Message checksum mismatch")
-		}
-		for i := range buff {
-			buff[i] = 0
-		}
+		log.Debug().Str("MSG", strings.TrimSuffix(hex.Dump(msg), "\n")).Msg("Message received")
 	}
 }
 
